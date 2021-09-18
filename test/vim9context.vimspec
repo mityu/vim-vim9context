@@ -3,7 +3,6 @@ let g:scope = themis#helper('scope')
 let g:funcs = g:scope.funcs('autoload/vim9context.vim')
 call themis#helper('command').with(g:assert)
 call themis#func_alias(g:funcs)
-let g:context = g:funcs.get_context_variables()
 
 set virtualedit=onemore
 
@@ -182,47 +181,47 @@ Describe s:determine_context_by_line()
 
   It determines the context when using :vim9cmd modifier.
     call setline(1, 'vim9cmd var TestVar: string')
-    Assert Equals(g:funcs.determine_context_by_line(1, 1), g:context.unknown)
-    Assert Equals(g:funcs.determine_context_by_line(1, 7), g:context.vim9_script)
-    Assert Equals(g:funcs.determine_context_by_line(1, 10), g:context.vim9_script)
+    Assert Equals(g:funcs.determine_context_by_line(1, 1), g:vim9context#CONTEXT_UNKNOWN)
+    Assert Equals(g:funcs.determine_context_by_line(1, 7), g:vim9context#CONTEXT_VIM9_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_line(1, 10), g:vim9context#CONTEXT_VIM9_SCRIPT)
   End
 
   It determines the context when using :legacy modifier.
     call setline(1, 'legacy let s:test_var = ""')
-    Assert Equals(g:funcs.determine_context_by_line(1, 1), g:context.unknown)
-    Assert Equals(g:funcs.determine_context_by_line(1, 6), g:context.vim_script)
-    Assert Equals(g:funcs.determine_context_by_line(1, 10), g:context.vim_script)
+    Assert Equals(g:funcs.determine_context_by_line(1, 1), g:vim9context#CONTEXT_UNKNOWN)
+    Assert Equals(g:funcs.determine_context_by_line(1, 6), g:vim9context#CONTEXT_VIM_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_line(1, 10), g:vim9context#CONTEXT_VIM_SCRIPT)
   End
 
   It determines the context when using both of :legacy and :def.
     call setline(1, 'legacy def Testfunc()')
-    Assert Equals(g:funcs.determine_context_by_line(1, 1), g:context.unknown)
-    Assert Equals(g:funcs.determine_context_by_line(1, 6), g:context.vim_script)
-    Assert Equals(g:funcs.determine_context_by_line(1, 10), g:context.vim9_script)
-    Assert Equals(g:funcs.determine_context_by_line(1, 15), g:context.vim9_script)
+    Assert Equals(g:funcs.determine_context_by_line(1, 1), g:vim9context#CONTEXT_UNKNOWN)
+    Assert Equals(g:funcs.determine_context_by_line(1, 6), g:vim9context#CONTEXT_VIM_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_line(1, 10), g:vim9context#CONTEXT_VIM9_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_line(1, 15), g:vim9context#CONTEXT_VIM9_SCRIPT)
   End
 
   It determines the context when using :legacy and :vim9cmd multiple times.
     call setline(1, 'vim9cmd legacy vim9cmd var Testvar: string')
-    Assert Equals(g:funcs.determine_context_by_line(1, 1), g:context.unknown)
-    Assert Equals(g:funcs.determine_context_by_line(1, 7), g:context.vim9_script)
-    Assert Equals(g:funcs.determine_context_by_line(1, 14), g:context.vim_script)
-    Assert Equals(g:funcs.determine_context_by_line(1, 22), g:context.vim9_script)
-    Assert Equals(g:funcs.determine_context_by_line(1, 30), g:context.vim9_script)
+    Assert Equals(g:funcs.determine_context_by_line(1, 1), g:vim9context#CONTEXT_UNKNOWN)
+    Assert Equals(g:funcs.determine_context_by_line(1, 7), g:vim9context#CONTEXT_VIM9_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_line(1, 14), g:vim9context#CONTEXT_VIM_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_line(1, 22), g:vim9context#CONTEXT_VIM9_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_line(1, 30), g:vim9context#CONTEXT_VIM9_SCRIPT)
   End
 
   It ignores 'export' modifier.
     call setline(1, 'export def TestFunc()')
-    Assert Equals(g:funcs.determine_context_by_line(1, 15), g:context.vim9_script)
+    Assert Equals(g:funcs.determine_context_by_line(1, 15), g:vim9context#CONTEXT_VIM9_SCRIPT)
   End
 
   It doesn't determine context when the context is unclear.
     call setline(1, "let test_var = 'legacy'")
-    Assert Equals(g:funcs.determine_context_by_line(1, col('$')), g:context.unknown)
+    Assert Equals(g:funcs.determine_context_by_line(1, col('$')), g:vim9context#CONTEXT_UNKNOWN)
     call setline(1, "echo 'vim9cmd'")
-    Assert Equals(g:funcs.determine_context_by_line(1, col('$')), g:context.unknown)
+    Assert Equals(g:funcs.determine_context_by_line(1, col('$')), g:vim9context#CONTEXT_UNKNOWN)
     call setline(1, '%s/legacy/vim9cmd/g')
-    Assert Equals(g:funcs.determine_context_by_line(1, col('$')), g:context.unknown)
+    Assert Equals(g:funcs.determine_context_by_line(1, col('$')), g:vim9context#CONTEXT_UNKNOWN)
   End
 End
 
@@ -238,9 +237,9 @@ Describe s:determine_context_by_blocks()
       endfunction
 END
     call setline(1, lines)
-    Assert Equals(g:funcs.determine_context_by_blocks(1, 1), g:context.unknown)
-    Assert Equals(g:funcs.determine_context_by_blocks(2, 1), g:context.vim_script)
-    Assert Equals(g:funcs.determine_context_by_blocks(3, 1), g:context.vim_script)
+    Assert Equals(g:funcs.determine_context_by_blocks(1, 1), g:vim9context#CONTEXT_UNKNOWN)
+    Assert Equals(g:funcs.determine_context_by_blocks(2, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_blocks(3, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
   End
 
   It determines the context is vim9script when in def function with :legacy modifier.
@@ -250,9 +249,9 @@ END
       enddef
 END
     call setline(1, lines)
-    Assert Equals(g:funcs.determine_context_by_blocks(1, 1), g:context.unknown)
-    Assert Equals(g:funcs.determine_context_by_blocks(2, 1), g:context.vim9_script)
-    Assert Equals(g:funcs.determine_context_by_blocks(3, 1), g:context.vim9_script)
+    Assert Equals(g:funcs.determine_context_by_blocks(1, 1), g:vim9context#CONTEXT_UNKNOWN)
+    Assert Equals(g:funcs.determine_context_by_blocks(2, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_blocks(3, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
   End
 
   It determines the context is vim9script when in def function.
@@ -262,9 +261,9 @@ END
       enddef
 END
     call setline(1, lines)
-    Assert Equals(g:funcs.determine_context_by_blocks(1, 1), g:context.unknown)
-    Assert Equals(g:funcs.determine_context_by_blocks(2, 1), g:context.vim9_script)
-    Assert Equals(g:funcs.determine_context_by_blocks(3, 1), g:context.vim9_script)
+    Assert Equals(g:funcs.determine_context_by_blocks(1, 1), g:vim9context#CONTEXT_UNKNOWN)
+    Assert Equals(g:funcs.determine_context_by_blocks(2, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_blocks(3, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
   End
 
   It determines the context in legacy function with some blocks in it.
@@ -284,15 +283,15 @@ END
       endfunction
 END
     call setline(1, lines)
-    Assert Equals(g:funcs.determine_context_by_blocks(1, 1), g:context.unknown)
-    Assert Equals(g:funcs.determine_context_by_blocks(2, 1), g:context.vim_script)
-    Assert Equals(g:funcs.determine_context_by_blocks(3, 1), g:context.vim_script)
-    Assert Equals(g:funcs.determine_context_by_blocks(5, 1), g:context.vim_script)
-    Assert Equals(g:funcs.determine_context_by_blocks(5, 10), g:context.vim9_script)
-    Assert Equals(g:funcs.determine_context_by_blocks(7, 1), g:context.vim_script)
-    Assert Equals(g:funcs.determine_context_by_blocks(7, col([7, '$'])), g:context.vim9_script)
-    Assert Equals(g:funcs.determine_context_by_blocks(11, 1), g:context.vim9_script)
-    Assert Equals(g:funcs.determine_context_by_blocks(13, 1), g:context.vim_script)
+    Assert Equals(g:funcs.determine_context_by_blocks(1, 1), g:vim9context#CONTEXT_UNKNOWN)
+    Assert Equals(g:funcs.determine_context_by_blocks(2, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_blocks(3, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_blocks(5, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_blocks(5, 10), g:vim9context#CONTEXT_VIM9_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_blocks(7, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_blocks(7, col([7, '$'])), g:vim9context#CONTEXT_VIM9_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_blocks(11, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+    Assert Equals(g:funcs.determine_context_by_blocks(13, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
   End
 
   It determines the context is vim9script when in vim9block in legacy function.
@@ -304,7 +303,7 @@ END
       endfunction
 END
     call setline(1, lines)
-    Assert Equals(g:funcs.determine_context_by_blocks(3, 1), g:context.vim9_script)
+    Assert Equals(g:funcs.determine_context_by_blocks(3, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
   End
 
   It doesn't determine context when the context is unclear.
@@ -319,8 +318,8 @@ END
 
       statement...
 END
-    Assert Equals(g:funcs.determine_context_by_blocks(4, 1), g:context.unknown)
-    Assert Equals(g:funcs.determine_context_by_blocks(8, 1), g:context.unknown)
+    Assert Equals(g:funcs.determine_context_by_blocks(4, 1), g:vim9context#CONTEXT_UNKNOWN)
+    Assert Equals(g:funcs.determine_context_by_blocks(8, 1), g:vim9context#CONTEXT_UNKNOWN)
   End
 End
 
@@ -336,7 +335,7 @@ Describe s:determine_context_by_file()
       var TestVar: string
 END
     call setline(1, lines)
-    Assert Equals(g:funcs.determine_context_by_file(), g:context.vim9_script)
+    Assert Equals(g:funcs.determine_context_by_file(), g:vim9context#CONTEXT_VIM9_SCRIPT)
   End
 
   It determines the context is vim9script even when there's a if statement on the top.
@@ -349,7 +348,7 @@ END
       var TestVar: string
 END
     call setline(1, lines)
-    Assert Equals(g:funcs.determine_context_by_file(), g:context.vim9_script)
+    Assert Equals(g:funcs.determine_context_by_file(), g:vim9context#CONTEXT_VIM9_SCRIPT)
   End
 
   It determines the context is vimscript.
@@ -360,7 +359,7 @@ END
       \}
 END
     call setline(1, lines)
-    Assert Equals(g:funcs.determine_context_by_file(), g:context.vim_script)
+    Assert Equals(g:funcs.determine_context_by_file(), g:vim9context#CONTEXT_VIM_SCRIPT)
   End
 End
 
@@ -390,17 +389,17 @@ Describe vim9context#is_vim9context_pos()
         legacy echo 'vimscript'
 END
       call setline(1, lines)
-      Assert Equals(vim9context#is_vim9context_pos(1, 1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(3, 1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(5, 1), g:context.vim_script)
-      Assert Equals(vim9context#is_vim9context_pos(6, 1), g:context.vim_script)
-      Assert Equals(vim9context#is_vim9context_pos(6, col([6, '$'])-1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(7, 1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(9, 1), g:context.vim_script)
-      Assert Equals(vim9context#is_vim9context_pos(9, col([9, '$'])-1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(10, 1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(14, 1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(16, col([16, '$'])), g:context.vim_script)
+      Assert Equals(vim9context#get_context_pos(1, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(3, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(5, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(6, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(6, col([6, '$'])-1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(7, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(9, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(9, col([9, '$'])-1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(10, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(14, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(16, col([16, '$'])), g:vim9context#CONTEXT_VIM_SCRIPT)
     End
   End
 
@@ -429,18 +428,18 @@ END
         vim9cmd echo 'vim9script'
 END
       call setline(1, lines)
-      Assert Equals(vim9context#is_vim9context_pos(1, 1), g:context.vim_script)
-      Assert Equals(vim9context#is_vim9context_pos(3, 1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(6, 1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(9, 1), g:context.vim_script)
-      Assert Equals(vim9context#is_vim9context_pos(10, 1), g:context.vim_script)
-      Assert Equals(vim9context#is_vim9context_pos(10, col([10, '$'])-1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(11, 1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(13, 1), g:context.vim_script)
-      Assert Equals(vim9context#is_vim9context_pos(13, col([13, '$'])-1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(14, 1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(18, 1), g:context.vim9_script)
-      Assert Equals(vim9context#is_vim9context_pos(20, col([20, '$'])), g:context.vim9_script)
+      Assert Equals(vim9context#get_context_pos(1, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(3, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(6, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(9, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(10, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(10, col([10, '$'])-1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(11, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(13, 1), g:vim9context#CONTEXT_VIM_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(13, col([13, '$'])-1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(14, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(18, 1), g:vim9context#CONTEXT_VIM9_SCRIPT)
+      Assert Equals(vim9context#get_context_pos(20, col([20, '$'])), g:vim9context#CONTEXT_VIM9_SCRIPT)
     End
   End
 End
