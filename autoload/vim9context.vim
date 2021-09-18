@@ -47,9 +47,9 @@ function! s:determine_context_by_line(linenr, columnnr) abort
       let context = g:vim9context#CONTEXT_VIM_SCRIPT
     elseif c =~# '^\<vim9\%[cmd]\>$'
       let context = g:vim9context#CONTEXT_VIM9_SCRIPT
-    elseif c =~# '^\<fu\%[nction]\>'
+    elseif c =~# '^\<fu\%[nction]\>!\?$'
       return g:vim9context#CONTEXT_VIM_SCRIPT
-    elseif c =~# '^\<def\>'
+    elseif c =~# '^\<def\>!\?$'
       return g:vim9context#CONTEXT_VIM9_SCRIPT
     elseif c =~# '^\<export\>$'
       continue
