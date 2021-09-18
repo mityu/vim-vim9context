@@ -222,6 +222,10 @@ Describe s:determine_context_by_line()
     Assert Equals(g:funcs.determine_context_by_line(1, col('$')), g:vim9context#CONTEXT_UNKNOWN)
     call setline(1, '%s/legacy/vim9cmd/g')
     Assert Equals(g:funcs.determine_context_by_line(1, col('$')), g:vim9context#CONTEXT_UNKNOWN)
+    call setline(1, '" function! Fn()')
+    Assert Equals(g:funcs.determine_context_by_line(1, col('$')), g:vim9context#CONTEXT_UNKNOWN)
+    call setline(1, 'de')
+    Assert Equals(g:funcs.determine_context_by_line(1, col('$')), g:vim9context#CONTEXT_UNKNOWN)
   End
 End
 
