@@ -140,7 +140,7 @@ function! s:determine_context_by_file() abort
   let curpos = getpos('.')
   try
     normal! gg0
-    let linenr = search('^\s*\<vim9s\%[cript]\>\s*$', 'cnW')
+    let linenr = search('^\s*\<vim9s\%[cript]\>\%(\s\+noclear\)\?\s*$', 'cnW')
     if linenr <= 0
       return g:vim9context#CONTEXT_VIM_SCRIPT
     endif

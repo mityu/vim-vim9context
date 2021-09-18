@@ -340,6 +340,9 @@ Describe s:determine_context_by_file()
 END
     call setline(1, lines)
     Assert Equals(g:funcs.determine_context_by_file(), g:vim9context#CONTEXT_VIM9_SCRIPT)
+
+    call setline(1, 'vim9script noclear')
+    Assert Equals(g:funcs.determine_context_by_file(), g:vim9context#CONTEXT_VIM9_SCRIPT)
   End
 
   It determines the context is vim9script even when there's a if statement on the top.
