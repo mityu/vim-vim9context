@@ -1,30 +1,111 @@
 *vim9context.vim*    [Experimental] Determine if the context is vim9script.
 
-Author: mityu
+Author: mityu <mityu.mail (at) gmail.com>
+Latest Version: https://github.com/mityu/vim-vim9context
 License: NYSL (http://www.kmonos.net/nysl/)
 
 ==============================================================================
-INTERFACE                           *vim9context*   *vim9context-interface*
+INTERFACE			*vim9context*	*vim9context-interface*
 
 Functions~
-                                                *vim9context-functions*
-vim9context#get_context()                       *vim9context#get_context()*
-    Determine the context of where you're editing.
-    Returns one of |vim9context-context-variables|.
+						*vim9context-functions*
+vim9context#get_context()			*vim9context#get_context()*
+	Determine the context of the cursor position.
+	Returns one of |vim9context-context-variables|.
+	Examples("|" means the cursor position):
+>
+	" Buffer contents:
+	vim9script
+	function! Legacy() abort
+		echo 'Hello' |
+	endfunction
+	:call vim9context#get_context()  "=> g:vim9context#CONTEXT_VIM_SCRIPT
 
 
-vim9context#get_context_pos({line}, {col})  *vim9context#get_context_pos()*
-    Similar to |vim9context#get_context()|, but determine the context of the
-    position [{line}, {col}].
-    Returns one of |vim9context-context-variables|.
+	" Buffer contents:
+	vim9script
+	legacy echo 'Hello' |
+	:call vim9context#get_context()  "=> g:vim9context#CONTEXT_VIM_SCRIPT
+
+
+	" Buffer contents:
+	def! Vim9Func()
+		echo 'Hello' |
+	enddef
+	:call vim9context#get_context()  "=> g:vim9context#CONTEXT_VIM9_SCRIPT
+
+
+	" Buffer contents:
+	def! Vim9Func() |
+		echo 'Hello'
+	enddef
+	:call vim9context#get_context()  "=> g:vim9context#CONTEXT_VIM9_SCRIPT
+
+
+	" Buffer contents:
+	| def! Vim9Func()
+		echo 'Hello'
+	enddef
+	:call vim9context#get_context()  "=> g:vim9context#CONTEXT_VIM_SCRIPT
+
+
+	" Buffer contents:
+	command! GreatCommand {
+		echo 'Hello' |
+	}
+	:call vim9context#get_context()  "=> g:vim9context#CONTEXT_VIM9_SCRIPT
+
+
+	" Buffer contents:
+	autocmd myGroup VimEnter * {
+		echo 'Hello' |
+	}
+	:call vim9context#get_context()  "=> g:vim9context#CONTEXT_VIM9_SCRIPT
+
+
+	" Buffer contents:
+	vim9cmd echo 'Hello' |
+	:call vim9context#get_context()  "=> g:vim9context#CONTEXT_VIM9_SCRIPT
+<
+
+
+vim9context#get_context_pos({line}, {col})	*vim9context#get_context_pos()*
+	Similar to |vim9context#get_context()|, but determine the context of
+	the position [{line}, {col}] on the current buffer.
+	Returns one of |vim9context-context-variables|.
+	Examples:
+>
+	" Buffer contents:
+	vim9script
+	echo 'Hello'
+	function Legacy() abort
+		echo 'Hello'
+	endfunction
+
+	:call vim9context#get_context_pos(2, 1)  "=> g:vim9context#CONTEXT_VIM9_SCRIPT
+	:call vim9context#get_context_pos(3, 1)  "=> g:vim9context#CONTEXT_VIM9_SCRIPT
+	:call vim9context#get_context_pos(4, 1)  "=> g:vim9context#CONTEXT_VIM_SCRIPT
+
+
+	" Buffer contents:
+	echo 'Hello'
+	def! Vim9Func()
+		echo 'Hello'
+	enddef
+
+	:call vim9context#get_context_pos(1, 1)  "=> g:vim9context#CONTEXT_VIM_SCRIPT
+	:call vim9context#get_context_pos(2, 1)  "=> g:vim9context#CONTEXT_VIM_SCRIPT
+	:call vim9context#get_context_pos(3, 1)  "=> g:vim9context#CONTEXT_VIM9_SCRIPT
+	:call vim9context#get_context_pos(2, col([2, '$']))  "=> g:vim9context#CONTEXT_VIM_SCRIPT
+<
 
 Variables~
-                                            *vim9context-context-variables*
-    g:vim9context#CONTEXT_VIM_SCRIPT
-                        Returned when the context is vimscript.
+						*vim9context-context-variables*
+	g:vim9context#CONTEXT_VIM_SCRIPT
+			Returned when the context is vimscript.
 
-    g:vim9context#CONTEXT_VIM9_SCRIPT
-                        Returned when the context is vim9script.
+	g:vim9context#CONTEXT_VIM9_SCRIPT
+			Returned when the context is vim9script.
 
 
 ==============================================================================
