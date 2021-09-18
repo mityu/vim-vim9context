@@ -1,0 +1,31 @@
+*vim9context.vim*    [Experimental] Determine if the context is vim9script.
+
+Author: mityu
+License: NYSL (http://www.kmonos.net/nysl/)
+
+==============================================================================
+INTERFACE                           *vim9context*   *vim9context-interface*
+
+Functions~
+                                                *vim9context-functions*
+vim9context#get_context()                       *vim9context#get_context()*
+    Determine the context of where you're editing.
+    Returns one of |vim9context-context-variables|.
+
+
+vim9context#get_context_pos({line}, {col})  *vim9context#get_context_pos()*
+    Similar to |vim9context#get_context()|, but determine the context of the
+    position [{line}, {col}].
+    Returns one of |vim9context-context-variables|.
+
+Variables~
+                                            *vim9context-context-variables*
+    g:vim9context#CONTEXT_VIM_SCRIPT
+                        Returned when the context is vimscript.
+
+    g:vim9context#CONTEXT_VIM9_SCRIPT
+                        Returned when the context is vim9script.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
