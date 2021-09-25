@@ -23,7 +23,7 @@ function! vim9context#get_context_pos(linenr, columnnr) abort
   " not meet the conditions above, the line is at script level.
   let context = s:determine_context_by_file()
   if context == g:vim9context#CONTEXT_UNKNOWN
-    echoerr '[vim9context] Internal Error: context is unknown that is must not be.'
+    echoerr '[vim9context] Internal Error: context is still unknown at the end.'
     let context = g:vim9context#CONTEXT_VIM_SCRIPT
   endif
   return context
@@ -78,7 +78,7 @@ function! s:determine_context_by_blocks(linenr, columnnr) abort
   while 1
     let innermost_commandblock = s:find_innermost_braces_block(linenr, columnnr)
     if innermost_commandblock == 0 || innermost_commandblock < innermost_legacy
-      " Any functions can appear in vim9script block.
+      " Any functions cannot appear in vim9script block.
       break
     elseif s:is_vim9script_block_beginning(
           \ innermost_commandblock, col([innermost_commandblock, '$']))
