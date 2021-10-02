@@ -152,13 +152,13 @@ endfunction
 
 function! s:find_innermost_legacy_function(linenr, columnnr) abort
   let begin = '\v^\s*%(<%(export|leg%[acy]|vim9%[cmd])>\s+)*fu%[nction]>'
-  let end = 'en\%[dfunction]\>'
+  let end = '\<en\%[dfunction]\>'
   return s:find_innermost_block(begin, end, a:linenr, a:columnnr)
 endfunction
 
 function! s:find_innermost_def_function(linenr, columnnr) abort
   let begin = '\v^\s*%(<%(export|legacy|vim9cmd)>\s+)*def>'
-  let end = 'enddef\>'
+  let end = '\<enddef\>'
   return s:find_innermost_block(begin, end, a:linenr, a:columnnr)
 endfunction
 
