@@ -21,7 +21,7 @@ function! vim9context#get_context_pos(linenr, columnnr) abort
 
   " Finally, check if there's :vim9script command because when the line does
   " not meet the conditions above, the line is at script level.
-  let context = s:determine_context_by_file()
+  let context = s:determine_context_by_file(a:linenr)
   if context == g:vim9context#CONTEXT_UNKNOWN
     echoerr '[vim9context] Internal Error: context is still unknown at the end.'
     let context = g:vim9context#CONTEXT_VIM_SCRIPT
@@ -133,15 +133,16 @@ function! s:is_vim9script_block_beginning(linenr, columnnr) abort
 endfunction
 
 " s:determine_context_by_file()
-" Check if the vim9script use exists or not and determine if the file is
-" vim9script file or not. This function must not return
+" Check if the vim9script use exists above cursor line or not and determine if
+" the file is vim9script file or not. This function must not return
 " g:vim9context#CONTEXT_UNKNOWN.
-function! s:determine_context_by_file() abort
+function! s:determine_context_by_file(linenr) abort
   let curpos = getpos('.')
   try
     normal! gg0
-    let linenr = search('^\s*\<vim9s\%[cript]\>\%(\s\+noclear\)\?\s*$', 'cnW')
-    if linenr <= 0
+    let linenr = search('^\s*\<vim9s\%[cript]\>\%(\s\+noclear\)\?\s*$',
+          \ 'cnW', a:linenr)
+    if linenr <= 0 || linenr == a:linenr
       return g:vim9context#CONTEXT_VIM_SCRIPT
     endif
     return g:vim9context#CONTEXT_VIM9_SCRIPT
