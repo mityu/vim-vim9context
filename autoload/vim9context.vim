@@ -3,7 +3,7 @@ let g:vim9context#CONTEXT_VIM9_SCRIPT = 1
 let g:vim9context#CONTEXT_UNKNOWN     = 2
 
 function! vim9context#get_context() abort
-  return g:vim9context#is_vim9context_pos(line('.'), col('.'))
+  return vim9context#get_context_pos(line('.'), col('.'))
 endfunction
 
 function! vim9context#get_context_pos(linenr, columnnr) abort
